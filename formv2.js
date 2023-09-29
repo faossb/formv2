@@ -1,4 +1,4 @@
- const recruitmentData = 
+const recruitmentData = 
 [
   {
     "Category": "Navy",
@@ -255,64 +255,64 @@
 ];
 
    
+let age;
 
-    let age;
+document.getElementById('dob').addEventListener('change', function() {
+  const dob = new Date(this.value);
+  const currentDate = new Date();
+  age = currentDate.getFullYear() - dob.getFullYear();
 
-    document.getElementById('dob').addEventListener('change', function() {
-      const dob = new Date(this.value);
-      const currentDate = new Date();
-      age = currentDate.getFullYear() - dob.getFullYear();
+  if (age >= 16 && age < 50) {
+    document.getElementById('check-eligibility').disabled = false;
+  } else {
+    document.getElementById('check-eligibility').disabled = true;
+    alert('You must be at least 16 years old and less than 50 years old to apply.');
+  }
+});
 
-      if (age >= 16 && age < 50) {
-        document.getElementById('check-eligibility').disabled = false;
-      } else {
-        document.getElementById('check-eligibility').disabled = true;
-        alert('You must be at least 16 years old and less than 50 years old to apply.');
-      }
-    });
+document.getElementById('qualification').addEventListener('change', function() {
+  const selectedValue = this.value;
+  const graduationOptions = document.getElementById('graduation-options');
 
-    document.getElementById('qualification').addEventListener('change', function() {
-      const selectedValue = this.value;
-      const graduationOptions = document.getElementById('graduation-options');
+  if (selectedValue === 'graduation') {
+    graduationOptions.style.display = 'block';
+  } else {
+    graduationOptions.style.display = 'none';
+    document.getElementById('graduation-stream').value = ''; 
+  }
+});
 
-      if (selectedValue === 'graduation') {
-        graduationOptions.style.display = 'block';
-      } else {
-        graduationOptions.style.display = 'none';
-      }
-    });
+document.getElementById('check-eligibility').addEventListener('click', function() {
+  const gender = document.getElementById('gender').value;
+  const qualification = document.getElementById('qualification').value;
+  const graduationStream = document.getElementById('graduation-stream').value;
 
-    document.getElementById('check-eligibility').addEventListener('click', function() {
-      const gender = document.getElementById('Gender').value;
-      const qualification = document.getElementById('Qualification').value;
-      const graduationStream = document.getElementById('Stream').value;
+  const resultsContainer = document.getElementById('results-container');
+  resultsContainer.innerHTML = ''; 
 
-      const resultsContainer = document.getElementById('results-container');
-      resultsContainer.innerHTML = ''; // Clear previous results
+  for (const entry of recruitmentData) {
+    const entryAgeRange = entry.Age.split('-');
+    const minAge = parseInt(entryAgeRange[0]);
+    const maxAge = parseInt(entryAgeRange[1]);
 
-      for (const entry of recruitmentData) {
-        const entryAgeRange = entry.age.split('-');
-        const minAge = parseInt(entryAgeRange[0]);
-        const maxAge = parseInt(entryAgeRange[1]);
+    if (
+      age >= minAge && age <= maxAge &&
+      entry.Gender.includes(gender) &&
+      ((qualification !== 'graduation' && entry.Qualification === qualification) ||
+      (qualification === 'graduation' && entry.Stream && entry.Stream.split(', ').includes(graduationStream)))
+    ) {
+      const resultElement = document.createElement('div');
+      resultElement.classList.add('bubble');
+      const formattedData = Object.keys(entry).map(key => `${key}: ${entry[key]}`).join('<br>');
+      resultElement.innerHTML = formattedData;
+      resultsContainer.appendChild(resultElement);
+    }
+  }
 
-        if (
-          age >= minAge && age <= maxAge &&
-          entry.gender.includes(gender) &&
-          ((qualification !== 'graduation' && entry.qualification === qualification) ||
-          (qualification === 'graduation' && entry.stream && entry.stream.split(', ').includes(graduationStream)))
-        ) {
-          const resultElement = document.createElement('div');
-          resultElement.classList.add('bubble');
-          const formattedData = Object.keys(entry).map(key => `${key}: ${entry[key]}`).join('<br>');
-          resultElement.innerHTML = formattedData;
-          resultsContainer.appendChild(resultElement);
-        }
-      }
-
-      if (resultsContainer.children.length === 0) {
-        const noResultsElement = document.createElement('div');
-        noResultsElement.classList.add('bubble');
-        noResultsElement.textContent = 'No matching categories found.';
-        resultsContainer.appendChild(noResultsElement);
-      }
-    });
+  if (resultsContainer.children.length === 0) {
+    const noResultsElement = document.createElement('div');
+    noResultsElement.classList.add('bubble');
+    noResultsElement.textContent = 'No matching categories found.';
+    resultsContainer.appendChild(noResultsElement);
+  }
+});
